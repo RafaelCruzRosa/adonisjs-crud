@@ -20,7 +20,8 @@ export default class PostsController {
   public async store({ request, response }: HttpContextContract) {
     try {
       const request_validated = await request.validate(CreatePostValidator);
-      let post = await Post.create({ text: request_validated.text });
+      //TODO: Validar se está salvando certo o usuario do post
+      let post = await Post.create(request_validated);
 
       response.status(201);
       return {
