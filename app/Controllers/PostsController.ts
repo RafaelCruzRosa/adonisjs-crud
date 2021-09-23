@@ -1,7 +1,8 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-
 import Database from "@ioc:Adonis/Lucid/Database";
 import Post from "App/Models/Post";
+import CreatePostValidator from "App/Validators/CreatePostValidator";
+import UpdatePostValidator from "App/Validators/UpdatePostValidator";
 
 export default class PostsController {
   public async index() {
@@ -17,23 +18,35 @@ export default class PostsController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    response.status(201);
-    let post = await Post.create({ text: request.body().text });
-    return {
-      message: "Post created!",
-      data: post,
-    };
+    try {
+      const request_validated = await request.validate(CreatePostValidator);
+      let post = await Post.create({ text: request_validated.text });
+
+      response.status(201);
+      return {
+        message: "Post created!",
+        data: post,
+      };
+    } catch (error) {
+      response.status(500);
+      return error;
+    }
   }
 
   public async update({ params, request, response }: HttpContextContract) {
-    response.status(200);
     let post = await Post.findOrFail(params.id);
-    post.text = request.body().text;
-    post.save();
-    return {
-      message: "Post updated!",
-      data: post,
-    };
+    try {
+      const request_validated = await request.validate(UpdatePostValidator);
+      post.text = request_validated.text;
+      post.save();
+      response.status(200);
+      return {
+        message: "Post updated!",
+        data: post,
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   public async destroy({ params, response }: HttpContextContract) {
