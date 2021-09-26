@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { BaseModel, column, HasOne, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
 import User from "./User";
 
 export default class Post extends BaseModel {
@@ -9,9 +9,14 @@ export default class Post extends BaseModel {
   @column()
   public text: string;
 
-  //TODO: Como fazer relacionamento de posts para usuario
-  @hasOne(() => User)
-  public user: HasOne<typeof User>;
+  @column()
+  public user_id: number;
+
+  @belongsTo(() => User, {
+    foreignKey: "user_id",
+    localKey: "id",
+  })
+  public user: BelongsTo<typeof User>;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;

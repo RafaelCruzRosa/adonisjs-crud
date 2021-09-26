@@ -9,7 +9,10 @@ export default class User extends BaseModel {
   @column()
   public name: string;
 
-  @hasMany(() => Post)
+  @hasMany(() => Post, {
+    foreignKey: "user_id",
+    localKey: "id",
+  })
   public posts: HasMany<typeof Post>;
 
   @column.dateTime({ autoCreate: true })

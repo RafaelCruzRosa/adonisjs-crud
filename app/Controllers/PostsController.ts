@@ -1,12 +1,11 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import Database from "@ioc:Adonis/Lucid/Database";
 import Post from "App/Models/Post";
 import CreatePostValidator from "App/Validators/CreatePostValidator";
 import UpdatePostValidator from "App/Validators/UpdatePostValidator";
 
 export default class PostsController {
   public async index() {
-    return Database.from("posts").paginate(1, 50);
+    return Post.all();
   }
 
   public async show({ params, response }: HttpContextContract) {
@@ -20,9 +19,7 @@ export default class PostsController {
   public async store({ request, response }: HttpContextContract) {
     try {
       const request_validated = await request.validate(CreatePostValidator);
-      //TODO: Validar se está salvando certo o usuario do post
-      let post = await Post.create(request_validated);
-
+      const post = await Post.create(request_validated);
       response.status(201);
       return {
         message: "Post created!",
